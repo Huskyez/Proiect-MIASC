@@ -11,7 +11,7 @@ from statistics import variance,mean
 region_country_file = "List.excel.xlsx"
 change_forest_csv = "annual-change-forest-area.csv"
 lat_long_csv = "lat-long.csv"
-
+predictions_csv="1980-2030 predictions.csv"
 
 def read_countries_excel(filepath):
     # returns a map with each country belonging to a a region
