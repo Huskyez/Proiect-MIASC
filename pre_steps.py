@@ -2,16 +2,17 @@ import os
 import sys
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, MinMaxScaler,RobustScaler,normalize
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, normalize
 from sklearn.model_selection import train_test_split
 from sklearn.covariance import EllipticEnvelope
 from sklearn.neighbors import LocalOutlierFactor
-from statistics import variance,mean
+from statistics import variance, mean
 
 region_country_file = "List.excel.xlsx"
 change_forest_csv = "annual-change-forest-area.csv"
 lat_long_csv = "lat-long.csv"
-predictions_csv="1980-2030 predictions.csv"
+predictions_csv = "1980-2030 predictions.csv"
+region_predictions_csv = "1980-2030_region_predictions.csv"
 
 def read_countries_excel(filepath):
     # returns a map with each country belonging to a a region
@@ -153,10 +154,11 @@ def get_raw_data():
 
     points, values = get_points_values(change_forest_csv, country_pos_map)
 
-    return points,values
+    return points, values
 
 def get_processed_data():
-    points,values=get_raw_data()
+    
+    points, values = get_raw_data()
     values = values.reshape(-1, 1)
 
     # STANDARD SCALER
@@ -189,7 +191,7 @@ def get_processed_data():
     scaled_values = np.ravel(scaled_values)
 
 
-    return points,scaled_values
+    return points, scaled_values, scaler
 
 def split_data(x,y,test_size=0.15):
     return train_test_split(x,y,test_size=test_size)

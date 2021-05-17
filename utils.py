@@ -1,23 +1,34 @@
 import numpy as np
-from pre_steps import predictions_csv,lat_long_csv,region_country_file,read_countries_excel,position_maps
+from pre_steps import predictions_csv, lat_long_csv, region_country_file, read_countries_excel, position_maps
 import pandas as pd
+
 def print_predicted_data(x_test,y_test,y_pred):
     for point, true, pred in zip(x_test, y_test, y_pred):
         print(str(point) + ": " + str(true) + " --- "  + str(pred))
 
 
-def make_1980_2030_data(x):
-    new_x=[]
-    x_del = np.delete(x, 0, 1)
-    x_del=np.unique(x_del,axis=0)
-    for entry in x_del:
-        for i in range(1980,2031):
-            new_x.append([i,entry[0],entry[1]])
-    return new_x
+def make_1980_2030_data(region_pos_map):
+    # new_x = []
+    # x_del = np.delete(x, 0, 1)
+    # x_del = np.unique(x_del,axis=0)
+    # for entry in x_del:
+    #     for i in range(1980,2031):
+    #         new_x.append([i,entry[0],entry[1]])
+    # return new_x
 
+    # points to predict
+    X_predict = []
+    # a list of regions corresponding to X_predict
+    # i.e. if X_predict[i] corresponds to region 'A' then regions_to_predictions[i] = 'A'
+    regions_to_predictions = [] 
+    for region in region_pos_map.keys():
+        for year in range(1980, 2031):
+            X_predict.append(np.array([year, region_pos_map[region][0], region_pos_map[region][1]]))
+            regions_to_predictions.append(region)
 
+    return X_predict, regions_to_predictions
 
-def save_predictions_country(x,y,file_name):
+def save_predictions_country(x, y, file_name):
     file=open(file_name,'w')
     text=''
     text=text+'year,'+'lat,'+'long,'+'net_forest_conversion\n'
@@ -26,10 +37,10 @@ def save_predictions_country(x,y,file_name):
     file.write(text)
 
 def get_regions_dict_lat_long():
-    country_region_map, regions=read_countries_excel(region_country_file)
-    region_pos_map, country_pos_map=position_maps(lat_long_csv,country_region_map)
+    country_region_map, regions = read_countries_excel(region_country_file)
+    region_pos_map, country_pos_map = position_maps(lat_long_csv, country_region_map)
 
-    regions_dict={}
+    regions_dict = {}
     for region in regions:
         regions_dict[region]=[]
 
@@ -43,7 +54,7 @@ def get_regions_dict_lat_long():
 
 
 def compute_mean_predicted_region(regions_dict):
-    predictions_df=pd.read_csv(predictions_csv)
+    predictions_df = pd.read_csv(predictions_csv)
     country_region_map, regions=read_countries_excel(region_country_file)
     region_pos_map, country_pos_map=position_maps(lat_long_csv,country_region_map)
     print(predictions_df)
@@ -79,19 +90,28 @@ def compute_mean_predicted_region(regions_dict):
     return regions_values
 
 
-def save_predictions_regions(regions,filename):
-    file=open(filename,'w')
-    text=''
-    text=text+'region,'+'year,'+'lat,'+'long,'+'net_forest_conversion\n'
-    for region in regions:
-        for i in regions[region]:
-            try:
-                text=text+str(region)+","+str(i[0])+","+str(i[1])+\
-                     ","+str(i[2])+","+str(i[3])+'\n'
-            except:
-                continue
-    file.write(text)
+# def save_predictions_regions(regions, filename):
+#     file=open(filename,'w')
+#     text=''
+#     text=text+'region,'+'year,'+'lat,'+'long,'+'net_forest_conversion\n'
+#     for region in regions:
+#         for i in regions[region]:
+#             try:
+#                 text=text+str(region)+","+str(i[0])+","+str(i[1])+\
+#                      ","+str(i[2])+","+str(i[3])+'\n'
+#             except:
+#                 continue
+#     file.write(text)
 
+
+def save_predictions_regions(filename, regions, points, predictions):
+    with open(filename, 'w') as f:
+        f.write("region,year,lat,long,net_forest_conversion\n")
+
+        for i in range(len(regions)):
+            f.write(regions[i] + "," \
+                + str(points[i][0]) + "," + str(points[i][1]) + "," + str(points[i][2]) + "," \
+                + str(predictions[i]) + "\n")
 
 
 
