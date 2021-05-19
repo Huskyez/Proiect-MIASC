@@ -17,7 +17,7 @@ if __name__ == '__main__':
 	# print_predicted_data(x_test,y_test,y_pred)
 
 	country_region_map, _ = read_countries_excel(region_country_file)
-	region_pos_map, _ = position_maps(lat_long_csv, country_region_map)
+	region_pos_map, country_pos_map = position_maps(lat_long_csv, country_region_map)
 
 	# X_predict = []
 	x_1980_2030, regions = make_1980_2030_data(region_pos_map)
@@ -35,4 +35,4 @@ if __name__ == '__main__':
 	# print(len(unscaled))
 	# print(unscaled)
 
-	save_predictions_regions(region_predictions_csv, regions, x_1980_2030, unscaled)
+	save_predictions_regions(predictions_csv, regions, x_1980_2030, unscaled)
